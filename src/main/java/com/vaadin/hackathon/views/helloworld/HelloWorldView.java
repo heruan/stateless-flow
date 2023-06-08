@@ -1,35 +1,23 @@
 package com.vaadin.hackathon.views.helloworld;
 
-import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.hackathon.views.MainLayout;
+import com.vaadin.hackathon.stateless.Span;
+import com.vaadin.hackathon.stateless.Stateless;
+import com.vaadin.hackathon.stateless.Template;
 
-@PageTitle("Hello World")
-@Route(value = "hello", layout = MainLayout.class)
-@RouteAlias(value = "", layout = MainLayout.class)
-public class HelloWorldView extends HorizontalLayout {
+@Route
+@Template
+public class HelloWorldView extends VerticalLayout implements Stateless {
 
-    private TextField name;
-    private Button sayHello;
+    public HelloWorldView(GlobalCounterService counter) {
+        add(new Button("Update counter",
+                clickEvent -> HelloWorldState.counterValueList
+                        .add(counter.getAndIncrement())));
 
-    public HelloWorldView() {
-        name = new TextField("Your name");
-        sayHello = new Button("Say hello");
-        sayHello.addClickListener(e -> {
-            Notification.show("Hello " + name.getValue());
-        });
-        sayHello.addClickShortcut(Key.ENTER);
-
-        setMargin(true);
-        setVerticalComponentAlignment(Alignment.END, name, sayHello);
-
-        add(name, sayHello);
+        addForEach(HelloWorldState.counterValueList,
+                counterState -> new Span("Counter updated at %d",
+                        counterState));
     }
-
 }
